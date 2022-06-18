@@ -35,9 +35,9 @@ export class MessageType {
   }
 
   toValue(): number {
-    const m3_0 = this.method & 0b000000001111;
-    const m6_4 = this.method & 0b000001110000;
-    const m11_7 = this.method & 0b111110000000;
+    const m3_0 = this.method & 0b00_0000_0000_1111;
+    const m6_4 = this.method & 0b00_0000_0111_0000;
+    const m11_7 = this.method & 0b00_1111_1000_0000;
 
     const c0 = (this.class & 0b01) << 4;
     const c1 = (this.class & 0b10) << 7;
@@ -51,9 +51,9 @@ export class MessageType {
     const c0 = (value >>> 4) & 0b01;
     const c1 = (value >>> 7) & 0b10;
 
-    const m3_0 = value & 0b000000001111;
-    const m6_4 = (value >>> 1) & 0b000001110000;
-    const m11_7 = (value >>> 2) & 0b111110000000;
+    const m3_0 = value & 0b00_0000_0000_1111;
+    const m6_4 = (value >>> 1) & 0b00_0000_0111_0000;
+    const m11_7 = (value >>> 2) & 0b00_1111_1000_0000;
 
     messageType.class = c1 + c0;
     messageType.method = m11_7 + m6_4 + m3_0;
@@ -63,13 +63,32 @@ export class MessageType {
 }
 
 export class MessageHeader {
-  type: MessageType;
-  length: number;
-  magicCookie: number;
-  transactionId: Uint8Array;
+  #buffer: ArrayBuffer;
+  #view: DataView;
+
+  get type(): MessageType {
+    return MessageType.FromValue(this.#view.getUint16(0));
+  }
+
+  get length(): number {
+    return this.#view.getUint16(2);
+  }
+
+  get magicCookie(): number {
+    return this.#view.getUint32(4);
+  }
+
+  get transactionId(): Uint8Array {
+    return new Uint8Array(this.#buffer, 8, 12);
+  }
+
+  constructor(buffer: ArrayBuffer) {
+    this.#buffer = buffer;
+    this.#view = new DataView(this.#buffer);
+  }
 }
 
 export class Message {
-  header: MessageHeader;
-  attributes: unknown[];
+  // header: MessageHeader;
+  // attributes: unknown[];
 }

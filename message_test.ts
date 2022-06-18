@@ -1,5 +1,12 @@
 import { assertEquals } from "https://deno.land/std@0.144.0/testing/asserts.ts";
-import { MessageType, Method, MethodClass } from "./message.ts";
+
+import {
+  MAGIC_COOKIE,
+  MessageHeader,
+  MessageType,
+  Method,
+  MethodClass,
+} from "./message.ts";
 
 Deno.test("test MessageType", () => {
   const messageType = new MessageType();
@@ -30,4 +37,26 @@ Deno.test("test MessageType.toValue", () => {
 
   messageType.class = MethodClass.ErrorResponse;
   assertEquals(messageType.toValue(), 0x0111);
+});
+
+Deno.test("test MessageHeader", () => {
+  const buffer = new ArrayBuffer(20);
+  const view = new DataView(buffer);
+  crypto.getRandomValues(new Uint8Array(buffer));
+
+  const randomId = new Uint8Array(buffer.slice(8, 20));
+  const length = Math.random() * 65535 | 0;
+
+  view.setUint8(0, 0x01);
+  view.setUint8(1, 0x01);
+  view.setUint16(2, length);
+  view.setUint32(4, MAGIC_COOKIE);
+
+  const messageHeader = new MessageHeader(buffer);
+
+  assertEquals(messageHeader.type.method, Method.Binding);
+  assertEquals(messageHeader.type.class, MethodClass.SuccessResponse);
+  assertEquals(messageHeader.length, length);
+  assertEquals(messageHeader.magicCookie, MAGIC_COOKIE);
+  assertEquals(messageHeader.transactionId, randomId);
 });
