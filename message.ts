@@ -1,8 +1,8 @@
-enum Method {
+export enum Method {
   Binding = 0b000000000001,
 }
 
-enum MethodClass {
+export enum MethodClass {
   Request = 0b00,
   Indication = 0b01,
   SuccessResponse = 0b10,
