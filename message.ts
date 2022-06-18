@@ -61,3 +61,15 @@ export class MessageType {
     return messageType;
   }
 }
+
+export class MessageHeader {
+  type: MessageType;
+  length: number;
+  magicCookie: number;
+  transactionId: Uint8Array;
+}
+
+export class Message {
+  header: MessageHeader;
+  attributes: unknown[];
+}
