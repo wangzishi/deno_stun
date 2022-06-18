@@ -23,6 +23,9 @@ export enum MethodClass {
  *                    +--+--+-+-+-+-+-+-+-+-+-+-+-+-+
  *
  *             Figure 3: Format of STUN Message Type Field
+ *
+ * M11 through M0 represent a 12-bit encoding of the method.
+ * C1 and C0 represent a 2-bit encoding of the class.
  * ```
  */
 export class MessageType {
@@ -89,6 +92,11 @@ export class MessageHeader {
 }
 
 export class Message {
-  // header: MessageHeader;
-  // attributes: unknown[];
+  header: MessageHeader;
+  attributes: unknown[];
+
+  constructor() {
+    this.header = new MessageHeader(new ArrayBuffer(20));
+    this.attributes = [];
+  }
 }
