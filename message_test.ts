@@ -7,16 +7,27 @@ Deno.test("test MessageType", () => {
   assertEquals(messageType.class, MethodClass.Request);
 });
 
-Deno.test("test MessageType.fromValue", () => {
-  const messageType1 = MessageType.fromValue(0x0001);
+Deno.test("test MessageType.FromValue", () => {
+  const messageType1 = MessageType.FromValue(0x0001);
   assertEquals(messageType1.method, Method.Binding);
   assertEquals(messageType1.class, MethodClass.Request);
 
-  const messageType2 = MessageType.fromValue(0x0101);
+  const messageType2 = MessageType.FromValue(0x0101);
   assertEquals(messageType2.method, Method.Binding);
   assertEquals(messageType2.class, MethodClass.SuccessResponse);
 
-  const messageType3 = MessageType.fromValue(0x0111);
+  const messageType3 = MessageType.FromValue(0x0111);
   assertEquals(messageType3.method, Method.Binding);
   assertEquals(messageType3.class, MethodClass.ErrorResponse);
+});
+
+Deno.test("test MessageType.toValue", () => {
+  const messageType = new MessageType();
+  assertEquals(messageType.toValue(), 0x0001);
+
+  messageType.class = MethodClass.SuccessResponse;
+  assertEquals(messageType.toValue(), 0x0101);
+
+  messageType.class = MethodClass.ErrorResponse;
+  assertEquals(messageType.toValue(), 0x0111);
 });

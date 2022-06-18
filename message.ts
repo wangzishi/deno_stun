@@ -1,3 +1,5 @@
+export const MAGIC_COOKIE = 0x2112A442;
+
 export enum Method {
   Binding = 0b000000000001,
 }
@@ -32,18 +34,29 @@ export class MessageType {
     this.class = MethodClass.Request;
   }
 
-  static fromValue(value: number): MessageType {
+  toValue(): number {
+    const m3_0 = this.method & 0b000000001111;
+    const m6_4 = this.method & 0b000001110000;
+    const m11_7 = this.method & 0b111110000000;
+
+    const c0 = (this.class & 0b01) << 4;
+    const c1 = (this.class & 0b10) << 7;
+
+    return m11_7 + c1 + m6_4 + c0 + m3_0;
+  }
+
+  static FromValue(value: number): MessageType {
     const messageType = new MessageType();
 
     const c0 = (value >>> 4) & 0b01;
     const c1 = (value >>> 7) & 0b10;
 
-    const m0_3 = value & 0b000000001111;
-    const m4_6 = (value >>> 1) & 0b000001110000;
-    const m7_11 = (value >>> 2) & 0b111110000000;
+    const m3_0 = value & 0b000000001111;
+    const m6_4 = (value >>> 1) & 0b000001110000;
+    const m11_7 = (value >>> 2) & 0b111110000000;
 
-    messageType.class = c0 + c1;
-    messageType.method = m0_3 + m4_6 + m7_11;
+    messageType.class = c1 + c0;
+    messageType.method = m11_7 + m6_4 + m3_0;
 
     return messageType;
   }
