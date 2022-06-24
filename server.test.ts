@@ -4,7 +4,7 @@ import {
   assertExists,
 } from "https://deno.land/std@0.144.0/testing/asserts.ts";
 
-import { Temporal } from "https://cdn.skypack.dev/@js-temporal/polyfill?dts";
+import { Temporal } from "./deps.ts";
 
 // import {
 //   describe,

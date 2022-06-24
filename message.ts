@@ -1,4 +1,6 @@
-export const MAGIC_COOKIE = 0x2112A442;
+import { dedent } from "./deps.ts";
+
+export const MAGIC_COOKIE = 0x2112a442;
 
 export enum Method {
   Binding = 0b000000000001,
