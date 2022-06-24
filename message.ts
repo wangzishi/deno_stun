@@ -48,6 +48,12 @@ export class MessageType {
     return m11_7 + c1 + m6_4 + c0 + m3_0;
   }
 
+  [Symbol.for("Deno.customInspect")](): string {
+    return dedent`
+      Type { method: ${this.method}, class: ${this.class} }
+    `;
+  }
+
   static FromValue(value: number): MessageType {
     const messageType = new MessageType();
 
@@ -66,7 +72,6 @@ export class MessageType {
 }
 
 export class MessageHeader {
-  #buffer: ArrayBuffer;
   #view: DataView;
 
   get type(): MessageType {
@@ -81,22 +86,55 @@ export class MessageHeader {
     return this.#view.getUint32(4);
   }
 
-  get transactionId(): Uint8Array {
-    return new Uint8Array(this.#buffer, 8, 12);
+  get transactionId(): DataView {
+    const byteOffset = this.#view.byteOffset + 8;
+    const byteLength = 12;
+
+    return new DataView(this.#view.buffer, byteOffset, byteLength);
   }
 
-  constructor(buffer: ArrayBuffer) {
-    this.#buffer = buffer;
-    this.#view = new DataView(this.#buffer);
+  constructor(view: DataView) {
+    // this.#buffer = buffer;
+    this.#view = view;
+  }
+
+  [Symbol.for("Deno.customInspect")](
+    inspect: typeof Deno.inspect,
+    options: Deno.InspectOptions,
+  ): string {
+    const id0_3 = this.transactionId.getUint32(0).toString(16);
+    const id4_7 = this.transactionId.getUint32(4).toString(16);
+    const id8_11 = this.transactionId.getUint32(8).toString(16);
+
+    const id = `0x${id0_3}${id4_7}${id8_11}`;
+    return dedent`
+      Header {
+        type: ${inspect(this.type, options)},
+        length: ${this.length},
+        magicCookie: ${this.magicCookie},
+        transactionId: ${id},
+      }
+    `;
   }
 }
 
 export class Message {
+  // #buffer: ArrayBufferLike;
   header: MessageHeader;
   attributes: unknown[];
 
-  constructor() {
-    this.header = new MessageHeader(new ArrayBuffer(20));
+  constructor(buffer: ArrayBufferLike) {
+    // this.#buffer = buffer;
+    this.header = new MessageHeader(new DataView(buffer, 0, 20));
     this.attributes = [];
+  }
+
+  [Symbol.for("Deno.customInspect")](
+    inspect: typeof Deno.inspect,
+    options: Deno.InspectOptions,
+  ): string {
+    return dedent`Message {
+      ${inspect(this.header, options)}
+    }`;
   }
 }
