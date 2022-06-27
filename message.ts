@@ -1,5 +1,6 @@
 import { dedent } from "./deps.ts";
 
+const customInspect = Symbol.for("Deno.customInspect");
 export const MAGIC_COOKIE = 0x2112a442;
 
 export enum Method {
@@ -50,7 +51,7 @@ export class MessageType {
     return m11_7 + c1 + m6_4 + c0 + m3_0;
   }
 
-  [Symbol.for("Deno.customInspect")](): string {
+  [customInspect](): string {
     return dedent`
       Type { method: ${this.method}, class: ${this.class} }
     `;
@@ -100,7 +101,7 @@ export class MessageHeader {
     this.#view = view;
   }
 
-  [Symbol.for("Deno.customInspect")](
+  [customInspect](
     inspect: typeof Deno.inspect,
     options: Deno.InspectOptions,
   ): string {
@@ -131,7 +132,7 @@ export class Message {
     this.attributes = [];
   }
 
-  [Symbol.for("Deno.customInspect")](
+  [customInspect](
     inspect: typeof Deno.inspect,
     options: Deno.InspectOptions,
   ): string {
